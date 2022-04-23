@@ -356,30 +356,30 @@ fn print_RA_state(
     vlr_env: &TypedIxVec<VirtualRangeIx, VirtualRange>,
     _frag_env: &TypedIxVec<RangeFragIx, RangeFrag>,
 ) {
-    debug!("<<<<====---- RA state at '{}' ----====", who);
+    assert!(true, "<<<<====---- RA state at '{}' ----====", who);
     //for ix in 0..perRealReg.len() {
     //    if !&perRealReg[ix].committed.pairs.is_empty() {
-    //        debug!(
+    //        assert!(true,
     //            "{:<5}  {}",
     //            universe.regs[ix].1,
     //            &perRealReg[ix].show1_with_envs(&frag_env)
     //        );
-    //        debug!("       {}", &perRealReg[ix].show2_with_envs(&frag_env));
-    //        debug!("");
+    //        assert!(true,"       {}", &perRealReg[ix].show2_with_envs(&frag_env));
+    //        assert!(true,"");
     //    }
     //}
     if !prioQ.is_empty() {
         for s in prioQ.show_with_envs(vlr_env) {
-            debug!("{}", s);
+            assert!(true, "{}", s);
         }
     }
     for eli in edit_list_move {
-        debug!("ELI MOVE: {:?}", eli);
+        assert!(true, "ELI MOVE: {:?}", eli);
     }
     for eli in edit_list_other {
-        debug!("ELI other: {:?}", eli);
+        assert!(true, "ELI other: {:?}", eli);
     }
-    debug!(">>>>");
+    assert!(true, ">>>>");
 }
 
 //=============================================================================
@@ -453,7 +453,7 @@ fn get_stackmap_artefacts_at(
     }
     let rci = rci.unwrap();
 
-    debug!("computing stackmap info at {:?}", pt);
+    assert!(true, "computing stackmap info at {:?}", pt);
 
     for rreg_no in rci.first..rci.last + 1 {
         // Get the RangeId, if any, assigned for `rreg_no` at `iix.u`.  From that we can figure
@@ -462,14 +462,16 @@ fn get_stackmap_artefacts_at(
         if let Some(range_id) = mb_range_id {
             // `rreg_no` is live at `iix.u`.
             let is_ref = if range_id.is_real() {
-                debug!(
+                assert!(
+                    true,
                     " real reg {:?} is real-range {:?}",
                     rreg_no,
                     rlr_env[range_id.to_real()]
                 );
                 rlr_env[range_id.to_real()].is_ref
             } else {
-                debug!(
+                assert!(
+                    true,
                     " real reg {:?} is virtual-range {:?}",
                     rreg_no,
                     vlr_env[range_id.to_virtual()]
@@ -484,7 +486,7 @@ fn get_stackmap_artefacts_at(
         }
     }
 
-    debug!("Sbefore = {:?}", s_before);
+    assert!(true, "Sbefore = {:?}", s_before);
 
     // Compute Safter.
 
@@ -504,7 +506,7 @@ fn get_stackmap_artefacts_at(
         }
     }
 
-    debug!("Safter = {:?}", s_before);
+    assert!(true, "Safter = {:?}", s_before);
 
     // Create the spill insns, as defined by Sbefore.  This has the side effect of recording the
     // spill in `spill_slot_allocator`, so we can later ask it to tell us all the reftyped spill
@@ -549,7 +551,7 @@ fn get_stackmap_artefacts_at(
 
     let reftyped_spillslots = spill_slot_allocator.get_reftyped_spillslots_at_inst_point(pt);
 
-    debug!("reftyped_spillslots = {:?}", reftyped_spillslots);
+    assert!(true, "reftyped_spillslots = {:?}", reftyped_spillslots);
 
     // And we're done!
 
@@ -723,14 +725,16 @@ pub fn alloc_main<F: Function>(
     // -------- Alloc main --------
 
     // Create initial state
-    debug!("alloc_main: begin");
-    debug!(
+    assert!(true, "alloc_main: begin");
+    assert!(
+        true,
         "alloc_main:   in: {} insns in {} blocks",
         func.insns().len(),
         func.blocks().len()
     );
     let num_vlrs_initial = vlr_env.len();
-    debug!(
+    assert!(
+        true,
         "alloc_main:   in: {} VLRs, {} RLRs",
         num_vlrs_initial,
         rlr_env.len()
@@ -762,7 +766,7 @@ pub fn alloc_main<F: Function>(
     let mut edit_list_move = Vec::<EditListItem>::new();
     let mut edit_list_other = Vec::<EditListItem>::new();
     if log_enabled!(Level::Debug) {
-        debug!("");
+        assert!(true, "");
         print_RA_state(
             "Initial",
             &reg_universe,
@@ -795,10 +799,13 @@ pub fn alloc_main<F: Function>(
     //
     // * split it.  This causes it to disappear but be replaced by two
     //   VirtualRanges which together constitute the original.
-    debug!("");
-    debug!("-- MAIN ALLOCATION LOOP (DI means 'direct', CO means 'coalesced'):");
+    assert!(true, "");
+    assert!(
+        true,
+        "-- MAIN ALLOCATION LOOP (DI means 'direct', CO means 'coalesced'):"
+    );
 
-    debug!("alloc_main:   main allocation loop: begin");
+    assert!(true, "alloc_main:   main allocation loop: begin");
 
     // ======== BEGIN Main allocation loop ========
     let mut num_vlrs_processed = 0; // stats only
@@ -806,10 +813,10 @@ pub fn alloc_main<F: Function>(
     let mut num_vlrs_evicted = 0; // stats only
 
     'main_allocation_loop: loop {
-        debug!("-- still TODO          {}", prioQ.len());
+        assert!(true, "-- still TODO          {}", prioQ.len());
         if false {
             if log_enabled!(Level::Debug) {
-                debug!("");
+                assert!(true, "");
                 print_RA_state(
                     "Loop Top",
                     &reg_universe,
@@ -820,7 +827,7 @@ pub fn alloc_main<F: Function>(
                     &vlr_env,
                     &frag_env,
                 );
-                debug!("");
+                assert!(true, "");
             }
         }
 
@@ -833,7 +840,11 @@ pub fn alloc_main<F: Function>(
         let curr_vlrix = mb_curr_vlrix.unwrap();
         let curr_vlr = &vlr_env[curr_vlrix];
 
-        debug!("--   considering       {:?}:  {:?}", curr_vlrix, curr_vlr);
+        assert!(
+            true,
+            "--   considering       {:?}:  {:?}",
+            curr_vlrix, curr_vlr
+        );
 
         assert!(curr_vlr.vreg.to_reg().is_virtual());
         assert!(curr_vlr.rreg.is_none());
@@ -934,7 +945,7 @@ pub fn alloc_main<F: Function>(
                             candStr + &" ".to_string() + &reg_universe.regs[rreg.get_index()].1;
                     }
                     candStr = candStr + &" }";
-                    debug!("--   CO candidates     {}", candStr);
+                    assert!(true, "--   CO candidates     {}", candStr);
                 }
             }
         }
@@ -991,7 +1002,8 @@ pub fn alloc_main<F: Function>(
                             != Some(true)
                     );
                     // Evict ..
-                    debug!(
+                    assert!(
+                        true,
                         "--   CO evict          {:?}:  {:?}",
                         *vlrix_to_evict, &vlr_env[*vlrix_to_evict]
                     );
@@ -1005,7 +1017,11 @@ pub fn alloc_main<F: Function>(
                     num_vlrs_evicted += 1;
                 }
                 // .. and reassign.
-                debug!("--   CO alloc to       {}", reg_universe.regs[rregNo].1);
+                assert!(
+                    true,
+                    "--   CO alloc to       {}",
+                    reg_universe.regs[rregNo].1
+                );
                 per_real_reg[rregNo].add_VirtualRange(curr_vlrix, &vlr_env);
                 vlr_env[curr_vlrix].rreg = Some(*rreg);
                 // We're done!
@@ -1041,7 +1057,7 @@ pub fn alloc_main<F: Function>(
         )> = None;
 
         'search_through_cand_rregs_loop: for rregNo in first_in_rc..last_in_rc + 1 {
-            //debug!("--   Cand              {} ...",
+            //assert!(true,"--   Cand              {} ...",
             //       reg_universe.regs[rregNo].1);
 
             let mb_evict_info: Option<(SparseSetU<[VirtualRangeIx; 4]>, SpillCost)> =
@@ -1055,10 +1071,10 @@ pub fn alloc_main<F: Function>(
                 );
             //
             //match mb_evict_info {
-            //  None => debug!("--   Cand              {}: Unavail",
+            //  None => assert!(true,"--   Cand              {}: Unavail",
             //                 reg_universe.regs[rregNo].1),
             //  Some((ref evict_set, ref evict_cost)) =>
-            //    debug!("--   Cand              {}: Avail, evict cost {:?}, set {:?}",
+            //    assert!(true,"--   Cand              {}: Avail, evict cost {:?}, set {:?}",
             //            reg_universe.regs[rregNo].1, evict_cost, evict_set)
             //}
             //
@@ -1113,7 +1129,8 @@ pub fn alloc_main<F: Function>(
             // Evict all evictees in the set
             for vlrix_to_evict in vlrixs_to_evict.iter() {
                 // Evict ..
-                debug!(
+                assert!(
+                    true,
                     "--   DI evict          {:?}:  {:?}",
                     *vlrix_to_evict, &vlr_env[*vlrix_to_evict]
                 );
@@ -1124,7 +1141,11 @@ pub fn alloc_main<F: Function>(
                 num_vlrs_evicted += 1;
             }
             // .. and reassign.
-            debug!("--   DI alloc to       {}", reg_universe.regs[rregNo].1);
+            assert!(
+                true,
+                "--   DI alloc to       {}",
+                reg_universe.regs[rregNo].1
+            );
             per_real_reg[rregNo].add_VirtualRange(curr_vlrix, &vlr_env);
             let rreg = reg_universe.regs[rregNo].0;
             vlr_env[curr_vlrix].rreg = Some(rreg);
@@ -1134,7 +1155,7 @@ pub fn alloc_main<F: Function>(
 
         // Still no luck.  We can't find a register to put it in, so we'll
         // have to spill it, since splitting it isn't yet implemented.
-        debug!("--   spill");
+        assert!(true, "--   spill");
 
         // If the live range already pertains to a spill or restore, then
         // it's Game Over.  The constraints (availability of RealRegs vs
@@ -1301,7 +1322,7 @@ pub fn alloc_main<F: Function>(
                 first: InstPoint::new(sri.iix, new_vlr_first_pt),
                 last: InstPoint::new(sri.iix, new_vlr_last_pt),
             };
-            debug!("--     new RangeFrag    {:?}", &new_vlr_frag);
+            assert!(true, "--     new RangeFrag    {:?}", &new_vlr_frag);
             let new_vlr_sfrags = SortedRangeFrags::unit(new_vlr_frag);
             let new_vlr = VirtualRange {
                 vreg: curr_vlr_vreg,
@@ -1314,7 +1335,8 @@ pub fn alloc_main<F: Function>(
                 spill_cost: SpillCost::infinite(),
             };
             let new_vlrix = VirtualRangeIx::new(vlr_env.len() as u32);
-            debug!(
+            assert!(
+                true,
                 "--     new VirtRange    {:?}  :=  {:?}",
                 new_vlrix, &new_vlr
             );
@@ -1383,10 +1405,10 @@ pub fn alloc_main<F: Function>(
                 iix: sri.iix,
             };
             if is_vv_boundary_move[sri.iix] {
-                debug!("--     new ELI MOVE     {:?}", &new_eli);
+                assert!(true, "--     new ELI MOVE     {:?}", &new_eli);
                 edit_list_move.push(new_eli);
             } else {
-                debug!("--     new ELI other    {:?}", &new_eli);
+                assert!(true, "--     new ELI other    {:?}", &new_eli);
                 edit_list_other.push(new_eli);
             }
         }
@@ -1396,10 +1418,10 @@ pub fn alloc_main<F: Function>(
     }
     // ======== END Main allocation loop ========
 
-    debug!("alloc_main:   main allocation loop: end");
+    assert!(true, "alloc_main:   main allocation loop: end");
 
     if log_enabled!(Level::Debug) {
-        debug!("");
+        assert!(true, "");
         print_RA_state(
             "Final",
             &reg_universe,
@@ -1414,8 +1436,8 @@ pub fn alloc_main<F: Function>(
 
     // ======== BEGIN Do spill slot coalescing ========
 
-    debug!("");
-    debug!("alloc_main:   create spills_n_reloads for MOVE insns");
+    assert!(true, "");
+    assert!(true, "alloc_main:   create spills_n_reloads for MOVE insns");
 
     // Sort `edit_list_move` by the insn with which each item is associated.
     edit_list_move.sort_unstable_by(|eli1, eli2| eli1.iix.cmp(&eli2.iix));
@@ -1473,12 +1495,20 @@ pub fn alloc_main<F: Function>(
             break;
         }
         // Find the bounds of the current group.
-        debug!("editlist entry (MOVE): min: {:?}", &edit_list_move[i_min]);
+        assert!(
+            true,
+            "editlist entry (MOVE): min: {:?}",
+            &edit_list_move[i_min]
+        );
         let i_min_iix = edit_list_move[i_min].iix;
         let mut i_max = i_min;
         while i_max + 1 < n_edit_list_move && edit_list_move[i_max + 1].iix == i_min_iix {
             i_max += 1;
-            debug!("editlist entry (MOVE): max: {:?}", &edit_list_move[i_max]);
+            assert!(
+                true,
+                "editlist entry (MOVE): max: {:?}",
+                &edit_list_move[i_max]
+            );
         }
         // Current group is from i_min to i_max inclusive.  At most 2 entries are
         // allowed per group.
@@ -1516,7 +1546,7 @@ pub fn alloc_main<F: Function>(
                         // Yay.  We've found a coalescable pair.  We can just ignore the
                         // two entries and move on.  Except we have to mark the insn
                         // itself for deletion.
-                        debug!("editlist entry (MOVE): delete {:?}", i_min_iix);
+                        assert!(true, "editlist entry (MOVE): delete {:?}", i_min_iix);
                         iixs_to_nop_out.push(i_min_iix);
                         i_min = i_max + 1;
                         n_edit_list_move_processed += 2;
@@ -1558,8 +1588,11 @@ pub fn alloc_main<F: Function>(
 
     // ======== BEGIN Create all other spills and reloads ========
 
-    debug!("");
-    debug!("alloc_main:   create spills_n_reloads for other insns");
+    assert!(true, "");
+    assert!(
+        true,
+        "alloc_main:   create spills_n_reloads for other insns"
+    );
 
     // Reload and spill instructions are missing.  To generate them, go through
     // the "edit list", which contains info on both how to generate the
@@ -1568,7 +1601,7 @@ pub fn alloc_main<F: Function>(
     let mut num_spills = 0; // stats only
     let mut num_reloads = 0; // stats only
     for eli in &edit_list_other {
-        debug!("editlist entry (other): {:?}", eli);
+        assert!(true, "editlist entry (other): {:?}", eli);
         let vlr = &vlr_env[eli.vlrix];
         let vlr_sfrags = &vlr.sorted_frags;
         assert!(vlr_sfrags.len() == 1);
@@ -1642,7 +1675,7 @@ pub fn alloc_main<F: Function>(
     // not take account of spill or reload instructions.  Dealing with those
     // is relatively simple and happens later.
 
-    debug!("alloc_main:   create frag_map");
+    assert!(true, "alloc_main:   create frag_map");
 
     let mut frag_map = Vec::<(RangeFrag, VirtualReg, RealReg)>::new();
     // For each real register under our control ..
@@ -1667,7 +1700,7 @@ pub fn alloc_main<F: Function>(
     let mut stackmaps = Vec::<Vec<SpillSlot>>::new();
 
     if !safepoint_insns.is_empty() {
-        debug!("alloc_main:   create safepoints and stackmaps");
+        assert!(true, "alloc_main:   create safepoints and stackmaps");
         for safepoint_iix in safepoint_insns {
             // Create the stackmap artefacts for `safepoint_iix`.  Save the stackmap (the
             // reftyped spillslots); we'll have to return it to the client as part of the
@@ -1716,7 +1749,7 @@ pub fn alloc_main<F: Function>(
         }
     }
 
-    debug!("alloc_main:   edit_inst_stream");
+    assert!(true, "alloc_main:   edit_inst_stream");
 
     let final_insns_and_targetmap_and_new_safepoints__or_err = edit_inst_stream(
         func,
@@ -1735,39 +1768,43 @@ pub fn alloc_main<F: Function>(
 
     match final_insns_and_targetmap_and_new_safepoints__or_err {
         Ok((ref final_insns, ..)) => {
-            debug!(
+            assert!(
+                true,
                 "alloc_main:   out: VLRs: {} initially, {} processed",
                 num_vlrs_initial, num_vlrs_processed
             );
-            debug!(
+            assert!(
+                true,
                 "alloc_main:   out: VLRs: {} evicted, {} spilled",
                 num_vlrs_evicted, num_vlrs_spilled
             );
-            debug!(
+            assert!(
+                true,
                 "alloc_main:   out: insns: {} total, {} spills, {} reloads, {} nopzs",
                 final_insns.len(),
                 num_spills,
                 num_reloads,
                 iixs_to_nop_out.len()
             );
-            debug!(
+            assert!(
+                true,
                 "alloc_main:   out: spill slots: {} used",
                 spill_slot_allocator.num_slots_in_use()
             );
         }
         Err(_) => {
-            debug!("alloc_main:   allocation failed!");
+            assert!(true, "alloc_main:   allocation failed!");
         }
     }
 
     let (final_insns, target_map, new_to_old_insn_map, new_safepoint_insns) =
         match final_insns_and_targetmap_and_new_safepoints__or_err {
             Err(e) => {
-                debug!("alloc_main: fail");
+                assert!(true, "alloc_main: fail");
                 return Err(e);
             }
             Ok(quad) => {
-                debug!("alloc_main:   creating RegAllocResult");
+                assert!(true, "alloc_main:   creating RegAllocResult");
                 quad
             }
         };
@@ -1835,7 +1872,7 @@ pub fn alloc_main<F: Function>(
         new_safepoint_insns,
     };
 
-    debug!("alloc_main: end");
+    assert!(true, "alloc_main: end");
 
     // ======== END Create the RegAllocResult ========
 

@@ -60,7 +60,8 @@ pub(crate) fn core_reftypes_analysis<RA: ReftypeAnalysis>(
         }
         let src_range = analysis.find_range_id_for_reg(InstPoint::new_use(iix), src);
         let dst_range = analysis.find_range_id_for_reg(InstPoint::new_def(iix), dst);
-        debug!(
+        assert!(
+            true,
             "move from {:?} (range {:?}) to {:?} (range {:?}) at inst {:?}",
             src, src_range, dst, dst_range, iix
         );

@@ -96,7 +96,8 @@ fn resolve_moves_in_block<F: Function>(
 
                     Location::Reg(from_rreg) => {
                         if from_rreg != rreg {
-                            debug!(
+                            assert!(
+                                true,
                                 "inblock fixup: {:?} move {:?} -> {:?} at {:?}",
                                 interval.id, from_rreg, rreg, at_inst
                             );
@@ -105,7 +106,8 @@ fn resolve_moves_in_block<F: Function>(
                     }
 
                     Location::Stack(spill) => {
-                        debug!(
+                        assert!(
+                            true,
                             "inblock fixup: {:?} reload {:?} -> {:?} at {:?}",
                             interval.id, spill, rreg, at_inst
                         );
@@ -129,7 +131,8 @@ fn resolve_moves_in_block<F: Function>(
                     Location::None => unreachable!(),
 
                     Location::Reg(rreg) => {
-                        debug!(
+                        assert!(
+                            true,
                             "inblock fixup: {:?} spill {:?} -> {:?} at {:?}",
                             interval.id, rreg, spill, at_inst
                         );
@@ -372,7 +375,7 @@ fn resolve_moves_across_blocks<F: Function>(
                         if cur_rreg == succ_rreg {
                             continue;
                         }
-                        debug!(
+                        assert!(true,
                           "boundary fixup: move {:?} -> {:?} at {:?} for {:?} between {:?} and {:?}",
                           cur_rreg,
                           succ_rreg,
@@ -387,7 +390,7 @@ fn resolve_moves_across_blocks<F: Function>(
                     }
 
                     (Location::Reg(cur_rreg), Location::Stack(spillslot)) => {
-                        debug!(
+                        assert!(true,
                           "boundary fixup: spill {:?} -> {:?} at {:?} for {:?} between {:?} and {:?}",
                           cur_rreg,
                           spillslot,
@@ -402,7 +405,7 @@ fn resolve_moves_across_blocks<F: Function>(
                     }
 
                     (Location::Stack(spillslot), Location::Reg(rreg)) => {
-                        debug!(
+                        assert!(true,
                           "boundary fixup: reload {:?} -> {:?} at {:?} for {:?} between {:?} and {:?}",
                           spillslot,
                           rreg,
@@ -463,7 +466,7 @@ fn resolve_moves_across_blocks<F: Function>(
         parallel_move_map.clear();
     }
 
-    debug!("");
+    assert!(true, "");
 }
 
 #[inline(never)]
@@ -477,7 +480,7 @@ pub(crate) fn run<F: Function>(
     spill_slot: &mut u32,
     scratches_by_rc: &[Option<RealReg>],
 ) -> Vec<InstToInsertAndExtPoint> {
-    debug!("resolve_moves");
+    assert!(true, "resolve_moves");
 
     // Keep three lists of moves to insert:
     // - moves across blocks, that must happen at the start of blocks,
@@ -656,10 +659,10 @@ fn schedule_moves(
     let mut num_cycles = 0;
     let mut cur_cycles = 0;
 
-    trace!("pending moves: {:#?}", pending);
+    assert!(true, "pending moves: {:#?}", pending);
 
     while let Some(pm) = pending.pop() {
-        trace!("handling pending move {:?}", pm);
+        assert!(true, "handling pending move {:?}", pm);
         debug_assert!(
             pm.from != pm.to,
             "spurious moves should not have been inserted"
@@ -672,12 +675,12 @@ fn schedule_moves(
             let blocking_pair = find_blocking_move(pending, stack.last().unwrap());
 
             if let Some((blocking_idx, blocking)) = blocking_pair {
-                trace!("found blocker: {:?}", blocking);
+                assert!(true, "found blocker: {:?}", blocking);
                 let mut stack_cur = 0;
 
                 let has_cycles =
                     if let Some(mut cycled) = find_cycled_move(stack, &mut stack_cur, blocking) {
-                        trace!("found cycle: {:?}", cycled);
+                        assert!(true, "found cycle: {:?}", cycled);
                         debug_assert!(cycled.cycle_end.is_none());
                         cycled.cycle_end = Some(cur_cycles);
                         true
@@ -689,7 +692,7 @@ fn schedule_moves(
                     loop {
                         match find_cycled_move(stack, &mut stack_cur, blocking) {
                             Some(ref mut cycled) => {
-                                trace!("found more cycles ending on blocker: {:?}", cycled);
+                                assert!(true, "found more cycles ending on blocker: {:?}", cycled);
                                 debug_assert!(cycled.cycle_end.is_none());
                                 cycled.cycle_end = Some(cur_cycles);
                             }
@@ -731,7 +734,7 @@ fn emit_moves(
     let mut spill_slot = None;
     let mut in_cycle = false;
 
-    trace!("emit_moves");
+    assert!(true, "emit_moves");
 
     for mov in ordered_moves {
         if let Some(_) = &mov.cycle_end {
@@ -753,7 +756,8 @@ fn emit_moves(
                         inst,
                         InstExtPoint::from_inst_point(at_inst),
                     ));
-                    trace!(
+                    assert!(
+                        true,
                         "finishing cycle: {:?} -> {:?}",
                         spill_slot.unwrap(),
                         dst_reg
@@ -780,7 +784,8 @@ fn emit_moves(
                         inst,
                         InstExtPoint::from_inst_point(at_inst),
                     ));
-                    trace!(
+                    assert!(
+                        true,
                         "finishing cycle: {:?} -> {:?} -> {:?}",
                         spill_slot.unwrap(),
                         scratch,
@@ -820,7 +825,12 @@ fn emit_moves(
                         inst,
                         InstExtPoint::from_inst_point(at_inst),
                     ));
-                    trace!("starting cycle: {:?} -> {:?}", src_reg, spill_slot.unwrap());
+                    assert!(
+                        true,
+                        "starting cycle: {:?} -> {:?}",
+                        src_reg,
+                        spill_slot.unwrap()
+                    );
                 }
                 MoveOperand::Stack(src_spill) => {
                     let scratch = scratches_by_rc[mov.vreg.get_class() as usize]
@@ -843,7 +853,8 @@ fn emit_moves(
                         inst,
                         InstExtPoint::from_inst_point(at_inst),
                     ));
-                    trace!(
+                    assert!(
+                        true,
                         "starting cycle: {:?} -> {:?} -> {:?}",
                         src_spill,
                         scratch,
@@ -861,6 +872,6 @@ fn emit_moves(
             inst,
             InstExtPoint::from_inst_point(at_inst),
         ));
-        trace!("moving {:?} -> {:?}", mov.from, mov.to);
+        assert!(true, "moving {:?} -> {:?}", mov.from, mov.to);
     }
 }

@@ -225,7 +225,8 @@ impl CheckerState {
                         .get(&mapped)
                         .cloned()
                         .unwrap_or(Default::default());
-                    debug!(
+                    assert!(
+                        true,
                         "checker: inst {:?}: orig {:?}, mapped {:?}, checker state {:?}",
                         inst, orig, mapped, val
                     );
@@ -259,7 +260,7 @@ impl CheckerState {
                     .get(&slot)
                     .cloned()
                     .unwrap_or(Default::default());
-                debug!("checker: inst {:?}: slot value {:?}", inst, val);
+                assert!(true, "checker: inst {:?}: slot value {:?}", inst, val);
                 match val {
                     CheckerValue::Unknown | CheckerValue::Conflicted => {
                         return Err(CheckerError::UnknownValueInSlot {
@@ -521,7 +522,8 @@ impl Checker {
         regsets: &RegSets,
         mapper: &RUM,
     ) -> Result<(), CheckerErrors> {
-        debug!(
+        assert!(
+            true,
             "add_op: block {} inst {} regsets {:?}",
             block.get(),
             inst_ix.get(),
@@ -553,7 +555,7 @@ impl Checker {
             defs,
             defs_reftyped,
         };
-        debug!("add_op: adding {:?}", op);
+        assert!(true, "add_op: adding {:?}", op);
         insts.push(op);
         Ok(())
     }
@@ -566,10 +568,10 @@ impl Checker {
         while !queue.is_empty() {
             let block = queue.pop_front().unwrap();
             let mut state = self.bb_in.get(&block).cloned().unwrap();
-            debug!("analyze: block {} has state {:?}", block.get(), state);
+            assert!(true, "analyze: block {} has state {:?}", block.get(), state);
             for inst in self.bb_insts.get(&block).unwrap() {
                 state.update(inst);
-                debug!("analyze: inst {:?} -> state {:?}", inst, state);
+                assert!(true, "analyze: inst {:?} -> state {:?}", inst, state);
             }
 
             for succ in self.bb_succs.get(&block).unwrap() {
@@ -578,7 +580,8 @@ impl Checker {
                 new_state.meet_with(cur_succ_in);
                 let changed = &new_state != cur_succ_in;
                 if changed {
-                    debug!(
+                    assert!(
+                        true,
                         "analyze: block {} state changed from {:?} to {:?}; pushing onto queue",
                         succ.get(),
                         cur_succ_in,
@@ -600,7 +603,7 @@ impl Checker {
             let mut state = input.clone();
             for inst in self.bb_insts.get(block).unwrap() {
                 if let Err(e) = state.check(inst) {
-                    debug!("Checker error: {:?}", e);
+                    assert!(true, "Checker error: {:?}", e);
                     errors.push(e);
                 }
                 state.update(inst);
@@ -617,7 +620,7 @@ impl Checker {
     /// Find any errors, returning `Err(CheckerErrors)` with all errors found
     /// or `Ok(())` otherwise.
     pub(crate) fn run(mut self) -> Result<(), CheckerErrors> {
-        debug!("Checker: full body is:\n{:?}", self.bb_insts);
+        assert!(true, "Checker: full body is:\n{:?}", self.bb_insts);
         self.has_run = true;
         self.analyze();
         self.find_errors()
@@ -698,12 +701,16 @@ impl CheckerContext {
         let empty = vec![];
         let mut skip_inst = false;
 
-        debug!("CheckerContext::handle_insn: inst {:?}", iix,);
+        assert!(true, "CheckerContext::handle_insn: inst {:?}", iix,);
 
         for &pre_point in &[ExtPoint::Reload, ExtPoint::SpillBefore, ExtPoint::Use] {
             let pre_point = InstExtPoint::new(iix, pre_point);
             for checker_inst in self.checker_inst_map.get(&pre_point).unwrap_or(&empty) {
-                debug!("at inst {:?}: pre checker_inst: {:?}", iix, checker_inst);
+                assert!(
+                    true,
+                    "at inst {:?}: pre checker_inst: {:?}",
+                    iix, checker_inst
+                );
                 self.checker.add_inst(bix, checker_inst.clone());
                 if let Inst::ChangeSpillSlotOwnership { .. } = checker_inst {
                     // Unlike spills/reloads/moves inserted by the regalloc, ChangeSpillSlotOwnership
@@ -718,7 +725,8 @@ impl CheckerContext {
                 .expect("only existing real registers at this point");
             assert!(regsets.is_sanitized());
 
-            debug!(
+            assert!(
+                true,
                 "at inst {:?}: regsets {:?} mapper {:?}",
                 iix, regsets, mapper
             );
@@ -728,7 +736,11 @@ impl CheckerContext {
         for &post_point in &[ExtPoint::ReloadAfter, ExtPoint::Spill] {
             let post_point = InstExtPoint::new(iix, post_point);
             for checker_inst in self.checker_inst_map.get(&post_point).unwrap_or(&empty) {
-                debug!("at inst {:?}: post checker_inst: {:?}", iix, checker_inst);
+                assert!(
+                    true,
+                    "at inst {:?}: post checker_inst: {:?}",
+                    iix, checker_inst
+                );
                 self.checker.add_inst(bix, checker_inst.clone());
             }
         }

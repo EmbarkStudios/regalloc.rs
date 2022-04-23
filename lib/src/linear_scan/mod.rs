@@ -457,7 +457,7 @@ impl Intervals {
 #[inline(never)]
 fn next_use(interval: &VirtualInterval, pos: InstPoint, _reg_uses: &RegUses) -> Option<InstPoint> {
     if log_enabled!(Level::Trace) {
-        trace!("find next use of {} after {:?}", interval, pos);
+        assert!(true, "find next use of {} after {:?}", interval, pos);
     }
 
     let mentions = interval.mentions();
@@ -524,7 +524,7 @@ fn next_use(interval: &VirtualInterval, pos: InstPoint, _reg_uses: &RegUses) -> 
 #[inline(never)]
 fn last_use(interval: &VirtualInterval, pos: InstPoint, _reg_uses: &RegUses) -> Option<InstPoint> {
     if log_enabled!(Level::Trace) {
-        trace!("searching last use of {} before {:?}", interval, pos,);
+        assert!(true, "searching last use of {} before {:?}", interval, pos,);
     }
 
     let mentions = interval.mentions();
@@ -583,8 +583,8 @@ fn last_use(interval: &VirtualInterval, pos: InstPoint, _reg_uses: &RegUses) -> 
         None => None,
     };
 
-    trace!("mentions: {:?}", mentions);
-    trace!("found: {:?}", ret);
+    assert!(true, "mentions: {:?}", mentions);
+    assert!(true, "found: {:?}", ret);
 
     ret
 }
@@ -657,19 +657,19 @@ pub(crate) fn run<F: Function>(
     };
 
     if log_enabled!(Level::Trace) {
-        trace!("fixed intervals:");
+        assert!(true, "fixed intervals:");
         for int in &intervals.fixeds {
-            trace!("{}", int);
+            assert!(true, "{}", int);
         }
-        trace!("");
-        trace!("unassigned intervals:");
+        assert!(true, "");
+        assert!(true, "unassigned intervals:");
         for int in &intervals.virtuals {
-            trace!("{}", int);
+            assert!(true, "{}", int);
             for mention in &int.mentions {
-                trace!("  mention @ {:?}: {:?}", mention.0, mention.1);
+                assert!(true, "  mention @ {:?}: {:?}", mention.0, mention.1);
             }
         }
-        trace!("");
+        assert!(true, "");
     }
 
     let (intervals, mut num_spill_slots) = assign_registers::run(
@@ -716,7 +716,7 @@ fn set_registers<F: Function>(
     stackmap_request: Option<&StackmapRequestInfo>,
     stackmaps: &[Vec<SpillSlot>],
 ) -> Result<Set<RealReg>, CheckerErrors> {
-    trace!("set_registers");
+    assert!(true, "set_registers");
 
     let mut clobbered_registers = Set::empty();
 
@@ -738,8 +738,8 @@ fn set_registers<F: Function>(
             Some(rreg) => rreg,
             _ => continue,
         };
-        trace!("int: {}", int);
-        trace!("  {:?}", int.mentions);
+        assert!(true, "int: {}", int);
+        assert!(true, "  {:?}", int.mentions);
         for &mention in &int.mentions {
             mention_map.push((mention.0, mention.1, int.vreg, rreg));
         }
@@ -780,12 +780,10 @@ fn set_registers<F: Function>(
                 break;
             }
 
-            trace!(
+            assert!(
+                true,
                 "{:?}: {:?} is in {:?} at {:?}",
-                iix,
-                vreg,
-                rreg,
-                mention_set
+                iix, vreg, rreg, mention_set
             );
 
             // Fill in new information at the given index.
@@ -828,7 +826,7 @@ fn set_registers<F: Function>(
 
         // At this point we've correctly filled the mapper; actually map the virtual registers to
         // the real ones in the Function.
-        trace!("map_regs for {:?}", func_inst_ix);
+        assert!(true, "map_regs for {:?}", func_inst_ix);
 
         // If available, make sure to update the checker's state *before* actually mapping the
         // register; the checker must see the function with virtual registers, not real ones.
@@ -885,7 +883,7 @@ fn apply_registers<F: Function>(
     use_checker: bool,
     stackmap_request: Option<&StackmapRequestInfo>,
 ) -> Result<RegAllocResult<F>, RegAllocError> {
-    trace!("apply_registers");
+    assert!(true, "apply_registers");
 
     let stackmaps = compute_stackmaps(virtual_intervals, stackmap_request.clone());
 

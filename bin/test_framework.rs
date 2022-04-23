@@ -1945,7 +1945,8 @@ impl Func {
                         _ => {}
                     }
                 }
-                debug!(
+                assert!(
+                    true,
                     "SRI: reftyped_vregs = {:?}, safepoint_insns = {:?}",
                     reftyped_vregs, safepoint_insns
                 );

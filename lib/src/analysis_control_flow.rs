@@ -107,7 +107,7 @@ fn calc_preds_and_succs<F: Function>(
     TypedIxVec<BlockIx, SparseSetU<[BlockIx; 4]>>,
     TypedIxVec<BlockIx, SparseSetU<[BlockIx; 4]>>,
 ) {
-    trace!("      calc_preds_and_succs: begin");
+    assert!(true, "      calc_preds_and_succs: begin");
 
     assert!(func.blocks().len() == num_blocks as usize);
 
@@ -140,9 +140,10 @@ fn calc_preds_and_succs<F: Function>(
     assert!(succ_map.len() == num_blocks);
 
     let mut n = 0;
-    trace!("");
+    assert!(true, "");
     for (preds, succs) in pred_map.iter().zip(succ_map.iter()) {
-        trace!(
+        assert!(
+            true,
             "{:<3?}   preds {:<16?}  succs {:?}",
             BlockIx::new(n),
             preds,
@@ -151,7 +152,7 @@ fn calc_preds_and_succs<F: Function>(
         n += 1;
     }
 
-    trace!("      calc_preds_and_succs: end");
+    assert!(true, "      calc_preds_and_succs: end");
     (pred_map, succ_map)
 }
 
@@ -167,7 +168,7 @@ fn calc_preord_and_postord<F: Function>(
     num_blocks: u32,
     succ_map: &TypedIxVec<BlockIx, SparseSetU<[BlockIx; 4]>>,
 ) -> Option<(Vec<BlockIx>, Vec<BlockIx>)> {
-    trace!("      calc_preord_and_postord: begin");
+    assert!(true, "      calc_preord_and_postord: begin");
 
     let mut pre_ord = Vec::<BlockIx>::new();
     let mut post_ord = Vec::<BlockIx>::new();
@@ -207,7 +208,8 @@ fn calc_preord_and_postord<F: Function>(
     assert!(pre_ord.len() == post_ord.len());
     assert!(pre_ord.len() <= num_blocks as usize);
     if pre_ord.len() < num_blocks as usize {
-        trace!(
+        assert!(
+            true,
             "      calc_preord_and_postord: invalid: {} blocks, {} reachable",
             num_blocks,
             pre_ord.len()
@@ -228,7 +230,11 @@ fn calc_preord_and_postord<F: Function>(
         debug_assert!(post_ord_sorted == expected);
     }
 
-    trace!("      calc_preord_and_postord: end.  {} blocks", num_blocks);
+    assert!(
+        true,
+        "      calc_preord_and_postord: end.  {} blocks",
+        num_blocks
+    );
     Some((pre_ord, post_ord))
 }
 
@@ -247,7 +253,7 @@ fn calc_dom_sets_slow(
     post_ord: &Vec<BlockIx>,
     start: BlockIx,
 ) -> TypedIxVec<BlockIx, Set<BlockIx>> {
-    trace!("          calc_dom_sets_slow: begin");
+    assert!(true, "          calc_dom_sets_slow: begin");
 
     let mut dom_map = TypedIxVec::<BlockIx, Set<BlockIx>>::new();
 
@@ -271,7 +277,11 @@ fn calc_dom_sets_slow(
         let mut num_iter = 0;
         loop {
             num_iter += 1;
-            trace!("          calc_dom_sets_slow:   outer loop {}", num_iter);
+            assert!(
+                true,
+                "          calc_dom_sets_slow:   outer loop {}",
+                num_iter
+            );
             let mut change = false;
             for i in 0..num_blocks {
                 // block_ix travels in "reverse preorder"
@@ -296,13 +306,18 @@ fn calc_dom_sets_slow(
         }
     }
 
-    trace!("");
+    assert!(true, "");
     let mut block_ix = 0;
     for dom_set in dom_map.iter() {
-        trace!("{:<3?}   dom_set {:<16?}", BlockIx::new(block_ix), dom_set);
+        assert!(
+            true,
+            "{:<3?}   dom_set {:<16?}",
+            BlockIx::new(block_ix),
+            dom_set
+        );
         block_ix += 1;
     }
-    trace!("          calc_dom_sets_slow: end");
+    assert!(true, "          calc_dom_sets_slow: end");
     dom_map
 }
 
@@ -380,7 +395,7 @@ fn calc_dom_tree(
     rpostord2bix: &Vec<BlockIx>,
     start: BlockIx,
 ) -> TypedIxVec<BlockIx, BlockIx> {
-    trace!("        calc_dom_tree: begin");
+    assert!(true, "        calc_dom_tree: begin");
 
     // We use 2^32-1 as a marker for an invalid BlockIx or postorder number.
     // Hence we need this:
@@ -466,7 +481,7 @@ fn calc_dom_tree(
         // by walking up the tree to the root, and check that it's the same as
         // what the simple algorithm produced.
 
-        trace!("        calc_dom_tree crosscheck: begin");
+        assert!(true, "        calc_dom_tree crosscheck: begin");
         let mut post_ord = rpostord2bix.clone();
         post_ord.reverse();
         let slow_sets = calc_dom_sets_slow(num_blocks, pred_map, &post_ord, start);
@@ -485,10 +500,10 @@ fn calc_dom_tree(
             }
             assert!(set.to_vec() == slow_sets[BlockIx::new(i)].to_vec());
         }
-        trace!("        calc_dom_tree crosscheck: end");
+        assert!(true, "        calc_dom_tree crosscheck: end");
     }
 
-    trace!("        calc_dom_tree: end");
+    assert!(true, "        calc_dom_tree: end");
     idom
 }
 
@@ -503,7 +518,7 @@ fn calc_loop_depths(
     post_ord: &Vec<BlockIx>,
     start: BlockIx,
 ) -> TypedIxVec<BlockIx, u32> {
-    trace!("      calc_loop_depths: begin");
+    assert!(true, "      calc_loop_depths: begin");
     let (bix2rpostord, rpostord2bix) = calc_rpostord(num_blocks, post_ord);
     let idom = calc_dom_tree(num_blocks, pred_map, &bix2rpostord, &rpostord2bix, start);
 
@@ -624,9 +639,10 @@ fn calc_loop_depths(
     debug_assert!(depth_map.len() == num_blocks);
 
     let mut n = 0;
-    trace!("");
+    assert!(true, "");
     for (depth, idom_by) in depth_map.iter().zip(idom.iter()) {
-        trace!(
+        assert!(
+            true,
             "{:<3?}   depth {}   idom {:?}",
             BlockIx::new(n),
             depth,
@@ -635,7 +651,7 @@ fn calc_loop_depths(
         n += 1;
     }
 
-    trace!("      calc_loop_depths: end");
+    assert!(true, "      calc_loop_depths: end");
     depth_map
 }
 
@@ -664,7 +680,7 @@ pub struct CFGInfo {
 impl CFGInfo {
     #[inline(never)]
     pub fn create<F: Function>(func: &F) -> Result<Self, AnalysisError> {
-        trace!("    CFGInfo::create: begin");
+        assert!(true, "    CFGInfo::create: begin");
 
         // Throw out insanely large inputs.  They'll probably cause failure later
         // on.
@@ -741,7 +757,7 @@ impl CFGInfo {
         //
         // === END compute loop depth of all Blocks
 
-        trace!("    CFGInfo::create: end");
+        assert!(true, "    CFGInfo::create: end");
         Ok(CFGInfo {
             pred_map,
             succ_map,

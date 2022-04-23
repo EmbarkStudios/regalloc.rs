@@ -405,7 +405,7 @@ fn map_vregs_to_rregs<F: Function>(
         // - call `mapper.set_direct(vreg, None)` with post-insn, post-spill
         //   ends.
 
-        trace!("current mapper {:?}", mapper);
+        assert!(true, "current mapper {:?}", mapper);
 
         // Update map for I.r:
         //   add frags starting at I.r
@@ -437,7 +437,7 @@ fn map_vregs_to_rregs<F: Function>(
             }
         }
 
-        trace!("maps after I.u {:?}", mapper);
+        assert!(true, "maps after I.u {:?}", mapper);
 
         // Update map for I.d:
         //   add frags starting at I.d
@@ -453,7 +453,7 @@ fn map_vregs_to_rregs<F: Function>(
 
         mapper.finish_overlay();
 
-        trace!("maps after I.d {:?}", mapper);
+        assert!(true, "maps after I.d {:?}", mapper);
 
         // If we have a checker, update it with spills, reloads, moves, and this
         // instruction, while we have `map_uses` and `map_defs` available.
@@ -467,16 +467,16 @@ fn map_vregs_to_rregs<F: Function>(
         // Finally, we have map_uses/map_defs set correctly for this instruction.
         // Apply it.
         if !nop_this_insn {
-            trace!("map_regs for {:?}", insn_ix);
+            assert!(true, "map_regs for {:?}", insn_ix);
             let mut insn = func.get_insn_mut(insn_ix);
             F::map_regs(&mut insn, &mapper);
-            trace!("mapped instruction: {:?}", insn);
+            assert!(true, "mapped instruction: {:?}", insn);
         } else {
             // N.B. We nop out instructions as requested only *here*, after the
             // checker call, because the checker must observe even elided moves
             // (they may carry useful information about a move between two virtual
             // locations mapped to the same physical location).
-            trace!("nop'ing out {:?}", insn_ix);
+            assert!(true, "nop'ing out {:?}", insn_ix);
             let nop = func.gen_zero_len_nop();
             let insn = func.get_insn_mut(insn_ix);
             *insn = nop;

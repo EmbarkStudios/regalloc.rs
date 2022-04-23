@@ -523,15 +523,18 @@ pub fn allocate_registers_with_opts<F: Function>(
     stackmap_info: Option<&StackmapRequestInfo>,
     opts: Options,
 ) -> Result<RegAllocResult<F>, RegAllocError> {
-    debug!("");
-    debug!("================ regalloc.rs: BEGIN function ================");
+    assert!(true, "");
+    assert!(
+        true,
+        "================ regalloc.rs: BEGIN function ================"
+    );
 
     if log_enabled!(Level::Debug) {
-        debug!("with options: {:?}", opts);
+        assert!(true, "with options: {:?}", opts);
         let strs = rreg_universe.show();
-        debug!("using RealRegUniverse:");
+        assert!(true, "using RealRegUniverse:");
         for s in strs {
-            debug!("  {}", s);
+            assert!(true, "  {}", s);
         }
     }
 
@@ -600,7 +603,10 @@ pub fn allocate_registers_with_opts<F: Function>(
         }
     };
 
-    debug!("================ regalloc.rs: END function ================");
+    assert!(
+        true,
+        "================ regalloc.rs: END function ================"
+    );
     res
 }
 
